@@ -1,0 +1,29 @@
+{
+  "name": "dependency-breaking-techniques",
+  "version": "1.0.0",
+  "description": "TypeScript katas for practicing the dependency-breaking techniques from Michael Feathers' \"Working Effectively with Legacy Code\".",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:01": "vitest run src/01-extract-interface",
+    "test:02": "vitest run src/02-parameterize-constructor",
+    "test:03": "vitest run src/03-adapt-parameter",
+    "test:04": "vitest run src/04-extract-and-override-call",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "legacy-code",
+    "refactoring",
+    "testing",
+    "kata",
+    "feathers"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
