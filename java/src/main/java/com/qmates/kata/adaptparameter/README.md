@@ -42,6 +42,16 @@ HTTP request."
 5. In the test, build the minimal type directly with a plain value.
 6. Run the tests.
 
+> **The book's form.** Feathers' canonical Adapt Parameter uses a narrow
+> *interface* (his example is literally an `HttpServletRequest`, adapted to a
+> `ParameterSource` interface) with a *production implementer* that wraps the
+> live object and a *fake implementer* for tests. A `record` as suggested above
+> is a lighter variant that works well here because `quote()` only needs a
+> couple of fixed values — there's nothing to read lazily, so the adapter can
+> extract them up front and no separate fake is needed. If you prefer to follow
+> the book exactly, make `ShippingRequest` an interface instead and write a
+> `ServletShippingRequest` implementer plus a fake.
+
 ## This exercise
 
 `ShippingController.quote()` takes a `jakarta.servlet.http.HttpServletRequest`,
