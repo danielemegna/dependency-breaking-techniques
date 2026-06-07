@@ -81,3 +81,14 @@ legacy-code refactoring.
 
 Michael C. Feathers, *Working Effectively with Legacy Code* (2004) — the
 chapters on sensing/separation and the dependency-breaking technique catalog.
+
+## License
+
+This kata — the exercise code, the shared domain, and the accompanying
+write-ups — is released under the [MIT License](LICENSE), © 2026 Marco Testa.
+Use it, fork it, and adapt it for courses or workshops freely.
+
+The license covers this repository's original material only. The
+*dependency-breaking techniques* it teaches are described in Michael Feathers'
+*Working Effectively with Legacy Code*; the per-exercise write-ups are original
+paraphrases and credit the book as their source.
