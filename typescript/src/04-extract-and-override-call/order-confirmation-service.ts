@@ -1,5 +1,5 @@
-import { sendEmail } from "./email-transport.js";
-import { orderSubtotalCents, type Order } from "../domain.js";
+import {sendEmail} from "./email-transport.js";
+import {orderSubtotalCents, type Order} from "../domain.js";
 
 export interface Confirmation {
   orderId: string;
@@ -19,6 +19,7 @@ export interface Confirmation {
  * call. The test below therefore hits the real transport, which throws.
  */
 export class OrderConfirmationService {
+
   async confirm(order: Order): Promise<Confirmation> {
     const total = orderSubtotalCents(order);
     const subject = `Your order ${order.id} is confirmed`;
@@ -28,13 +29,17 @@ export class OrderConfirmationService {
       `Thanks for your order ${order.id}.`,
       `Total charged: ${(total / 100).toFixed(2)} USD.`,
     ].join("\n");
-
-    await sendEmail(order.customer.email, subject, body);
+    let customerEmail = order.customer.email;
+    await this.dispatchEmail(customerEmail, subject, body);
 
     return {
       orderId: order.id,
-      emailedTo: order.customer.email,
+      emailedTo: customerEmail,
       totalCents: total,
     };
+  }
+
+  protected async dispatchEmail(recipientEmail: string, subject: string, body: string) {
+    await sendEmail(recipientEmail, subject, body);
   }
 }
