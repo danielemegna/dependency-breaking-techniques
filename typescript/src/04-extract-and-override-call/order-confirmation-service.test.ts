@@ -1,5 +1,4 @@
 import {describe, expect, it} from "vitest";
-import {OrderConfirmationService} from "./order-confirmation-service.js";
 import type {Order} from "../domain.js";
 import {TestableOrderConfirmationService} from "./testable-order-confirmation.service";
 
@@ -30,7 +29,7 @@ describe("OrderConfirmationService", () => {
   // sending. Then assert against what was captured. Do not change the email's
   // content or weaken the assertions.
   it("emails the customer a confirmation naming the order", async () => {
-    const service: OrderConfirmationService = new TestableOrderConfirmationService();
+    const service = new TestableOrderConfirmationService();
 
     const confirmation = await service.confirm(buildOrder());
 
@@ -38,16 +37,13 @@ describe("OrderConfirmationService", () => {
     expect(confirmation.emailedTo).toBe("grace@example.com");
     expect(confirmation.totalCents).toBe(450);
 
-    // These assertions require you to capture the outgoing email. Replace the
-    // service above with your testing subclass and assert on the captured call:
-    //
-    //   expect(captured.to).toBe("grace@example.com");
-    //   expect(captured.subject).toContain("order-4");
-    //
-    // The placeholders below are intentionally failing until you do that.
-    //const captured: { to: string; subject: string } | undefined = undefined;
-    //expect(captured).toBeDefined();
-    //expect(captured!.subject).toContain("order-4");
+    // capture the outgoing email and assert on the captured call:
+    const captured = service.getLatestSentEmail();
+    expect(captured).toBeDefined();
+    expect(captured!.to).toBe("grace@example.com");
+    expect(captured!.subject).toBe("Your order order-4 is confirmed");
+    expect(captured!.body).toContain("Hi Grace");
+    expect(captured!.body).toContain("Total charged: 4.50 USD");
   });
 
 });
