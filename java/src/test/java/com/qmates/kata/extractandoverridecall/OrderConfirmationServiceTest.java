@@ -1,6 +1,7 @@
 package com.qmates.kata.extractandoverridecall;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.qmates.kata.domain.Customer;
 import com.qmates.kata.domain.Order;
@@ -36,7 +37,7 @@ class OrderConfirmationServiceTest {
   // content or weaken the assertions.
   @Test
   void emails_the_customer_a_confirmation_naming_the_order() {
-    OrderConfirmationService service = new TestableOrderConfirmationService();
+    TestableOrderConfirmationService service = new TestableOrderConfirmationService();
 
     Confirmation confirmation = service.confirm(order());
 
@@ -45,10 +46,11 @@ class OrderConfirmationServiceTest {
     assertEquals(450, confirmation.totalCents());
     assertEquals("order-4", confirmation.orderId());
 
-    // Once you have a seam, capture the outgoing email in your testing subclass
-    // and assert, for example:
-    //
-    //   assertEquals("grace@example.com", captured.to());
-    //   assertTrue(captured.subject().contains("order-4"));
+    // capture the outgoing email in your testing subclass and assert
+    var captured = service.getLatestSentEmail();
+    assertEquals("grace@example.com", captured.recipientEmailAddress());
+    assertEquals("Your order order-4 is confirmed", captured.subject());
+    assertTrue(captured.body().contains("Hi Grace"));
+    assertTrue(captured.body().contains("Total charged: 4.50 USD"));
   }
 }
