@@ -15,7 +15,15 @@ import com.qmates.kata.domain.Orders;
  */
 public class DiscountCalculator {
 
-  private final SystemClock clock = new SystemClock();
+  private final SystemClock clock;
+
+  public DiscountCalculator() {
+    this(new SystemClock());
+  }
+
+  public DiscountCalculator(SystemClock clock) {
+    this.clock = clock;
+  }
 
   public PricedOrder price(Order order, Coupon coupon) {
     long subtotal = Orders.subtotalCents(order);

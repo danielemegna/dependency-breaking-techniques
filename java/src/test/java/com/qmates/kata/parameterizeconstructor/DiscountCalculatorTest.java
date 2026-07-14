@@ -1,13 +1,16 @@
 package com.qmates.kata.parameterizeconstructor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.qmates.kata.domain.Coupon;
 import com.qmates.kata.domain.Customer;
 import com.qmates.kata.domain.Order;
 import com.qmates.kata.domain.OrderLine;
+
 import java.time.Instant;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 class DiscountCalculatorTest {
@@ -39,16 +42,14 @@ class DiscountCalculatorTest {
   void rejects_a_coupon_that_has_expired_relative_to_the_current_time() {
     Instant fixedNow = Instant.parse("2100-06-01T00:00:00Z");
     Coupon coupon = new Coupon("SAVE10", 10, Instant.parse("2099-01-01T00:00:00Z"));
-
-    // Once you have a seam, construct the calculator so that "now" == fixedNow
-    // (for example by passing an overridden SystemClock). There is nowhere to
-    // inject `fixedNow` yet, so it is unused for now.
-    DiscountCalculator calculator = new DiscountCalculator();
+    SystemClock clock = new FixedClock(fixedNow);
+    DiscountCalculator calculator = new DiscountCalculator(clock);
 
     PricedOrder priced = calculator.price(order(), coupon);
 
     assertEquals("coupon expired", priced.rejectedReason());
     assertEquals(0, priced.discountCents());
+    assertEquals(4000, priced.subtotalCents());
     assertEquals(4000, priced.totalCents());
   }
 
@@ -60,6 +61,24 @@ class DiscountCalculatorTest {
     PricedOrder priced = calculator.price(order(), null);
 
     assertEquals(0, priced.discountCents());
+    assertEquals(4000, priced.subtotalCents());
     assertEquals(4000, priced.totalCents());
+    assertNull(priced.rejectedReason());
   }
+
+  @Test
+  void applies_discount_with_non_expired_coupon() {
+    Instant fixedNow = Instant.parse("2026-07-14T08:00:00Z");
+    Coupon coupon = new Coupon("SAVE10", 10, Instant.parse("2099-01-01T00:00:00Z"));
+    SystemClock clock = new FixedClock(fixedNow);
+    DiscountCalculator calculator = new DiscountCalculator(clock);
+
+    PricedOrder priced = calculator.price(order(), coupon);
+
+    assertEquals(400, priced.discountCents());
+    assertEquals(4000, priced.subtotalCents());
+    assertEquals(4000 - 400, priced.totalCents());
+    assertNull(priced.rejectedReason());
+  }
+
 }
