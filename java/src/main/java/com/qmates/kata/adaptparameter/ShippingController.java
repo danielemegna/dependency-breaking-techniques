@@ -28,11 +28,17 @@ public class ShippingController {
 
   public ShippingQuote quote(HttpServletRequest request) throws IOException {
     String destinationCountry = request.getHeader("X-Destination-Country");
+    int weightGrams = parseWeight(readBody(request));
+    return quote(new ShippingRequest(destinationCountry, weightGrams));
+  }
+
+  public ShippingQuote quote(ShippingRequest request) {
+    String destinationCountry = request.destinationCountry();
     if (destinationCountry == null) {
       destinationCountry = "US";
     }
 
-    int weightGrams = parseWeight(readBody(request));
+    int weightGrams = request.weightInGrams();
 
     double kilos = weightGrams / 1000.0;
     long costCents = BASE_FEE_CENTS + Math.round(kilos * PER_KG_CENTS);

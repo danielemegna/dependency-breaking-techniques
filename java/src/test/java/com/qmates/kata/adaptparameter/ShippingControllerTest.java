@@ -25,27 +25,26 @@ class ShippingControllerTest {
   void quotes_a_domestic_shipment_from_a_plain_request() throws Exception {
     ShippingController controller = new ShippingController();
 
-    // TODO: build a simple request describing { country: "US", weightGrams: 2000 }.
-    HttpServletRequest request = null;
-
+    ShippingRequest request = new ShippingRequest("US", 2000);
     ShippingQuote quote = controller.quote(request);
 
     // base 500 + 2kg * 250 = 1000, no international surcharge
     assertEquals(1000, quote.costCents());
     assertEquals("US", quote.destinationCountry());
+    assertEquals(2000, quote.weightGrams());
   }
 
   @Test
   void adds_the_international_surcharge_for_non_us_destinations() throws Exception {
     ShippingController controller = new ShippingController();
 
-    // TODO: build a simple request describing { country: "IT", weightGrams: 1000 }.
-    HttpServletRequest request = null;
-
+    ShippingRequest request = new ShippingRequest("IT", 1000);
     ShippingQuote quote = controller.quote(request);
 
     // base 500 + 1kg * 250 = 750, + 1500 international = 2250
     assertEquals(2250, quote.costCents());
     assertEquals("IT", quote.destinationCountry());
+    assertEquals(1000, quote.weightGrams());
   }
+
 }
