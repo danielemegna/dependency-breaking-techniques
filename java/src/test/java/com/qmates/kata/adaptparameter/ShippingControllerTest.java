@@ -2,7 +2,6 @@ package com.qmates.kata.adaptparameter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 
 class ShippingControllerTest {
@@ -25,7 +24,7 @@ class ShippingControllerTest {
   void quotes_a_domestic_shipment_from_a_plain_request() throws Exception {
     ShippingController controller = new ShippingController();
 
-    ShippingRequest request = new ShippingRequest("US", 2000);
+    ShippingRequest request = new RecordShippingRequest("US", 2000);
     ShippingQuote quote = controller.quote(request);
 
     // base 500 + 2kg * 250 = 1000, no international surcharge
@@ -38,7 +37,7 @@ class ShippingControllerTest {
   void adds_the_international_surcharge_for_non_us_destinations() throws Exception {
     ShippingController controller = new ShippingController();
 
-    ShippingRequest request = new ShippingRequest("IT", 1000);
+    ShippingRequest request = new RecordShippingRequest("IT", 1000);
     ShippingQuote quote = controller.quote(request);
 
     // base 500 + 1kg * 250 = 750, + 1500 international = 2250
@@ -47,4 +46,5 @@ class ShippingControllerTest {
     assertEquals(1000, quote.weightGrams());
   }
 
+  private record RecordShippingRequest(String destinationCountry, int weightInGrams) implements ShippingRequest { }
 }

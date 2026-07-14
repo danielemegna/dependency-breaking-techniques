@@ -24,15 +24,13 @@ public class ShippingController {
   private static final long BASE_FEE_CENTS = 500;
   private static final long PER_KG_CENTS = 250;
   private static final long INTERNATIONAL_SURCHARGE_CENTS = 1500;
-  private static final Pattern WEIGHT = Pattern.compile("\"weightGrams\"\\s*:\\s*(\\d+)");
 
   public ShippingQuote quote(HttpServletRequest request) throws IOException {
-    String destinationCountry = request.getHeader("X-Destination-Country");
-    int weightGrams = parseWeight(readBody(request));
-    return quote(new ShippingRequest(destinationCountry, weightGrams));
+    ShippingRequest shippingRequest = new WrapperShippingRequest(request);
+    return quote(shippingRequest);
   }
 
-  public ShippingQuote quote(ShippingRequest request) {
+  public ShippingQuote quote(ShippingRequest request) throws IOException {
     String destinationCountry = request.destinationCountry();
     if (destinationCountry == null) {
       destinationCountry = "US";
@@ -49,22 +47,4 @@ public class ShippingController {
     return new ShippingQuote(destinationCountry, weightGrams, costCents);
   }
 
-  private String readBody(HttpServletRequest request) throws IOException {
-    StringBuilder raw = new StringBuilder();
-    try (BufferedReader reader = request.getReader()) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        raw.append(line);
-      }
-    }
-    return raw.toString();
-  }
-
-  private int parseWeight(String jsonBody) {
-    Matcher matcher = WEIGHT.matcher(jsonBody);
-    if (!matcher.find()) {
-      throw new IllegalArgumentException("request body is missing weightGrams");
-    }
-    return Integer.parseInt(matcher.group(1));
-  }
 }

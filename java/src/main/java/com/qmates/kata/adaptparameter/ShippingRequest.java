@@ -1,3 +1,8 @@
 package com.qmates.kata.adaptparameter;
 
-public record ShippingRequest(String destinationCountry, int weightInGrams) { }
+import java.io.IOException;
+
+public interface ShippingRequest {
+    String destinationCountry();
+    int weightInGrams() throws IOException;
+}
