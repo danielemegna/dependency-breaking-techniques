@@ -17,9 +17,9 @@ import com.qmates.kata.domain.Orders;
  */
 public class OrderProcessor {
 
-  private final StripePaymentGateway gateway;
+  private final ChargePaymentGateway gateway;
 
-  public OrderProcessor(StripePaymentGateway gateway) {
+  public OrderProcessor(ChargePaymentGateway gateway) {
     this.gateway = gateway;
   }
 

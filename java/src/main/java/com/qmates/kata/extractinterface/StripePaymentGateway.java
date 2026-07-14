@@ -10,7 +10,7 @@ import java.util.Map;
  * live endpoint. There is no abstraction between {@link OrderProcessor} and
  * this class — {@code OrderProcessor} names this concrete type directly.
  */
-public class StripePaymentGateway {
+public class StripePaymentGateway implements ChargePaymentGateway {
 
   private final HttpClient http = new HttpClient();
   private final String baseUrl = "https://api.stripe.com/v1";
@@ -23,6 +23,7 @@ public class StripePaymentGateway {
     this.apiKey = apiKey;
   }
 
+  @Override
   public ChargeResult charge(long amountCents, String paymentToken) {
     Map<String, Object> payload =
         Map.of(
