@@ -36,13 +36,14 @@ class OrderConfirmationServiceTest {
   // content or weaken the assertions.
   @Test
   void emails_the_customer_a_confirmation_naming_the_order() {
-    OrderConfirmationService service = new OrderConfirmationService();
+    OrderConfirmationService service = new TestableOrderConfirmationService();
 
     Confirmation confirmation = service.confirm(order());
 
     // The returned record (does not require observing the email):
     assertEquals("grace@example.com", confirmation.emailedTo());
     assertEquals(450, confirmation.totalCents());
+    assertEquals("order-4", confirmation.orderId());
 
     // Once you have a seam, capture the outgoing email in your testing subclass
     // and assert, for example:

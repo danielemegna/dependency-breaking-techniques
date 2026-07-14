@@ -27,9 +27,15 @@ public class OrderConfirmationService {
             "",
             "Thanks for your order " + order.id() + ".",
             "Total charged: " + String.format("%.2f", total / 100.0) + " USD.");
+    String recipientEmailAddress = order.customer().email();
 
-    EmailTransport.sendEmail(order.customer().email(), subject, body);
+    sendEmail(recipientEmailAddress, subject, body);
 
-    return new Confirmation(order.id(), order.customer().email(), total);
+    return new Confirmation(order.id(), recipientEmailAddress, total);
   }
+
+  protected void sendEmail(String recipientEmailAddress, String subject, String body) {
+    EmailTransport.sendEmail(recipientEmailAddress, subject, body);
+  }
+
 }
