@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ShippingController } from "./shipping-controller.js";
+import { ShippingController, type ShippingRequest } from "./shipping-controller.js";
 
 describe("ShippingController", () => {
   // This test is RED on purpose.
@@ -17,14 +17,14 @@ describe("ShippingController", () => {
     const controller = new ShippingController();
 
     // A simple stand-in for an HTTP request. No streams involved.
-    const request = {
+    const request: ShippingRequest = {
       headers: { "x-destination-country": "US" },
       body: JSON.stringify({ weightGrams: 2000 }),
     };
 
     // NOTE: this line will not type-check / will throw until you adapt the
     // parameter. Once you do, pass `request` (or an adapted form of it).
-    const quote = await controller.quote(request as never);
+    const quote = await controller.quoteOnShippingRequest(request);
 
     // base 500 + 2kg * 250 = 1000 -> 1000, no international surcharge
     expect(quote.costCents).toBe(1000);
@@ -39,7 +39,7 @@ describe("ShippingController", () => {
       body: JSON.stringify({ weightGrams: 1000 }),
     };
 
-    const quote = await controller.quote(request as never);
+    const quote = await controller.quoteOnShippingRequest(request as never);
 
     // base 500 + 1kg * 250 = 750, + 1500 international = 2250
     expect(quote.costCents).toBe(2250);

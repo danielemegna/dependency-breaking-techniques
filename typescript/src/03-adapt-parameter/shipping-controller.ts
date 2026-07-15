@@ -7,6 +7,11 @@ export interface ShippingQuote {
   costCents: Cents;
 }
 
+export interface ShippingRequest {
+  headers: Record<string, any>,
+  body: string
+}
+
 /**
  * Produces a shipping quote for an incoming HTTP request.
  *
@@ -26,11 +31,16 @@ export class ShippingController {
   private readonly internationalSurchargeCents = 1500;
 
   async quote(req: IncomingMessage): Promise<ShippingQuote> {
-    const destinationCountry =
-      (req.headers["x-destination-country"] as string | undefined) ?? "US";
-
     const body = await this.readBody(req);
-    const { weightGrams } = JSON.parse(body) as { weightGrams: number };
+    return this.quoteOnShippingRequest({
+      headers: req.headers,
+      body: body,
+    })
+  }
+
+  async quoteOnShippingRequest(req: ShippingRequest): Promise<ShippingQuote> {
+    const destinationCountry = (req.headers["x-destination-country"] as string | undefined) ?? "US";
+    const { weightGrams } = JSON.parse(req.body) as { weightGrams: number };
 
     const kilos = weightGrams / 1000;
     let costCents = this.baseFeeCents + Math.round(kilos * this.perKgCents);
