@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { OrderProcessor } from "./order-processor.js";
-import { StripePaymentGateway } from "./stripe-payment-gateway.js";
 import type { Order } from "../domain.js";
+import FakeChargePaymentGateway from "./fake-charge-payment-gateway";
 
 function buildOrder(overrides: Partial<Order> = {}): Order {
   return {
@@ -28,24 +28,42 @@ describe("OrderProcessor", () => {
   // the lines below with an injected fake gateway, then make the assertions
   // pass. Do not weaken the assertions — break the dependency instead.
   it("charges the order subtotal and reports the order as paid", async () => {
-    const gateway = new StripePaymentGateway("sk_test_example");
+    const gateway = new FakeChargePaymentGateway({ success: true, chargeId: "charge-id", declineReason: undefined })
     const processor = new OrderProcessor(gateway);
 
     const result = await processor.process(buildOrder());
 
     expect(result.status).toBe("paid");
-    expect(result.chargeId).toBeDefined();
+    expect(result.chargeId).toBe("charge-id");
+    expect(result.reason).toBeUndefined();
   });
 
   // Already green: no collaborator is touched on this path. Keep it green while
   // you refactor.
   it("declines an empty order without touching the gateway", async () => {
-    const gateway = new StripePaymentGateway("sk_test_example");
+    const gateway = new FakeChargePaymentGateway({ success: true, chargeId: "charge-id", declineReason: undefined })
     const processor = new OrderProcessor(gateway);
 
     const result = await processor.process(buildOrder({ lines: [] }));
 
     expect(result.status).toBe("declined");
     expect(result.reason).toBe("empty order");
+    expect(result.chargeId).toBeUndefined();
   });
+
+  it("declines an order on failure from gateway", async () => {
+    const gateway = new FakeChargePaymentGateway({
+      success: false,
+      chargeId: undefined,
+      declineReason: "insufficient-credit"
+    })
+    const processor = new OrderProcessor(gateway);
+
+    const result = await processor.process(buildOrder());
+
+    expect(result.status).toBe("declined");
+    expect(result.reason).toBe("insufficient-credit");
+    expect(result.chargeId).toBeUndefined();
+  });
+
 });

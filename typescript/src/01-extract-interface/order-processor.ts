@@ -1,5 +1,5 @@
-import { StripePaymentGateway } from "./stripe-payment-gateway.js";
 import { orderSubtotalCents, type Order } from "../domain.js";
+import type ChargePaymentGateway from "./charge-payment-gateway";
 
 export interface ProcessResult {
   status: "paid" | "declined";
@@ -20,7 +20,7 @@ export interface ProcessResult {
  * we can implement with a test double.
  */
 export class OrderProcessor {
-  constructor(private readonly gateway: StripePaymentGateway) {}
+  constructor(private readonly gateway: ChargePaymentGateway) { }
 
   async process(order: Order): Promise<ProcessResult> {
     if (order.lines.length === 0) {

@@ -1,5 +1,6 @@
 import { HttpClient } from "./http-client.js";
 import type { Cents } from "../domain.js";
+import type ChargePaymentGateway from "./charge-payment-gateway";
 
 export interface ChargeResult {
   success: boolean;
@@ -17,7 +18,7 @@ export interface ChargeResult {
  * endpoint. There is no abstraction between `OrderProcessor` and this class —
  * `OrderProcessor` names this concrete type directly.
  */
-export class StripePaymentGateway {
+export class StripePaymentGateway implements ChargePaymentGateway {
   private readonly http = new HttpClient();
   private readonly baseUrl = "https://api.stripe.com/v1";
 
